@@ -10,6 +10,18 @@ export class MyWebServerStack extends cdk.Stack {
     // VPC creation
     const vpc = new ec2.Vpc(this, 'MyVpc', {
       maxAzs: 1, // Default is all AZs in the region
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'public-subnet',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'private-subnet',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+      ],
     });
 
     // Security group for the EC2 instance
@@ -38,6 +50,7 @@ export class MyWebServerStack extends cdk.Stack {
       machineImage: ami,
       securityGroup: securityGroup,
       role: role,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
   }
 }
